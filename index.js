@@ -1,6 +1,24 @@
+/**
+ * Characters object used by the constructor.
+ * @typedef {Object} characters
+ * @property {string} [start] - Start of the progress bar string (default: "[")
+ * @property {string} [empty] - Character to indicate that the spot is empty (default: "-")
+ * @property {string} [full] - Character to indicate that the spot is full (default: "=")
+ * @property {string} [end] - End of the progress bar string (default: "]")
+ */
+
+/**
+* Progress bar implementation without dependecies.
+* @class
+* @exports
+*/
 class ProgressBar {
     chars = { start: "[", end: "]", empty: "-", full: "=" };
 
+    /**
+    * @param {characters} characters
+    * @constructs
+    */
     constructor(out = process.stdout, max = 10, adaptive = true, characters = this.chars) {
         this.out = out;
         this.pLen = max;
@@ -19,10 +37,18 @@ class ProgressBar {
         this.reset();
     }
 
+    /**
+    * Returns the current terminal width or the max length. Used in adaptive mode.
+    * @return number
+    */
     getWidth() {
         return this.out.columns || this.pLen;
     }
 
+    /**
+    * Increases the progress by a value
+    * @return void
+    */
     progress(amount = 1) {
         if (amount + this.current > this.pLen)
             this.current = this.pLen;
@@ -42,14 +68,26 @@ class ProgressBar {
         }
         this.out.write("\r" + this.chars.start + full + empty + this.chars.end);
     }
+    /**
+    * Sets the progress to a value
+    * @return void
+    */
     setProgress(val = 0) {
         this.reset();
         this.progress(val);
     }
+    /**
+    * Returns the current progress
+    * @return number
+    */
     getProgress() {
         return this.current;
     }
 
+    /**
+    * Resets the progress
+    * @return void
+    */
     reset() {
         this.current = 0;
         if (this.adaptive)
@@ -60,10 +98,3 @@ class ProgressBar {
 }
 
 module.exports = ProgressBar;
-
-/* EXAMPLE
-let bar = new ProgressBar(process.stdout, 10);
-setInterval(() => bar.progress(), 500);
-setTimeout(() => bar.reset(), 2250);
-setTimeout(() => bar.setProgress(1), 4250);
-*/
